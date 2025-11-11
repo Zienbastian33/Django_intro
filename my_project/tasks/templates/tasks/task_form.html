@@ -1,0 +1,137 @@
+{% extends 'tasks/base.html' %}
+
+{% block title %}
+    {% if form.instance.pk %}Editar Tarea{% else %}Nueva Tarea{% endif %} - Task Manager
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="mb-3">
+            <a href="{% url 'task-list' %}" class="btn btn-outline-light">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">
+                    {% if form.instance.pk %}
+                        <i class="bi bi-pencil"></i> Editar Tarea
+                    {% else %}
+                        <i class="bi bi-plus-circle"></i> Nueva Tarea
+                    {% endif %}
+                </h3>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <!-- Título -->
+                    <div class="mb-3">
+                        <label for="{{ form.title.id_for_label }}" class="form-label fw-bold">
+                            Título *
+                        </label>
+                        <input type="text"
+                               name="{{ form.title.name }}"
+                               class="form-control {% if form.title.errors %}is-invalid{% endif %}"
+                               id="{{ form.title.id_for_label }}"
+                               value="{{ form.title.value|default:'' }}"
+                               placeholder="Ej: Completar informe mensual"
+                               required>
+                        {% if form.title.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.title.errors }}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">Título descriptivo de la tarea</div>
+                    </div>
+
+                    <!-- Descripción -->
+                    <div class="mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label fw-bold">
+                            Descripción
+                        </label>
+                        <textarea name="{{ form.description.name }}"
+                                  class="form-control {% if form.description.errors %}is-invalid{% endif %}"
+                                  id="{{ form.description.id_for_label }}"
+                                  rows="4"
+                                  placeholder="Describe los detalles de la tarea (opcional)">{{ form.description.value|default:'' }}</textarea>
+                        {% if form.description.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.description.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Prioridad -->
+                    <div class="mb-3">
+                        <label for="{{ form.priority.id_for_label }}" class="form-label fw-bold">
+                            Prioridad
+                        </label>
+                        <select name="{{ form.priority.name }}"
+                                class="form-select {% if form.priority.errors %}is-invalid{% endif %}"
+                                id="{{ form.priority.id_for_label }}">
+                            <option value="high" {% if form.priority.value == 'high' %}selected{% endif %}>
+                                🔴 Alta
+                            </option>
+                            <option value="medium" {% if form.priority.value == 'medium' or not form.priority.value %}selected{% endif %}>
+                                🟡 Media
+                            </option>
+                            <option value="low" {% if form.priority.value == 'low' %}selected{% endif %}>
+                                🟢 Baja
+                            </option>
+                        </select>
+                        {% if form.priority.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.priority.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Completada (solo en modo edición) -->
+                    {% if form.instance.pk %}
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       name="{{ form.completed.name }}"
+                                       id="{{ form.completed.id_for_label }}"
+                                       {% if form.completed.value %}checked{% endif %}>
+                                <label class="form-check-label fw-bold" for="{{ form.completed.id_for_label }}">
+                                    Marcar como completada
+                                </label>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <!-- Botones -->
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-save"></i>
+                            {% if form.instance.pk %}Guardar Cambios{% else %}Crear Tarea{% endif %}
+                        </button>
+                        <a href="{% url 'task-list' %}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Ayuda -->
+        <div class="card mt-3 bg-light">
+            <div class="card-body">
+                <h6 class="text-muted">
+                    <i class="bi bi-info-circle"></i> Consejos
+                </h6>
+                <ul class="small text-muted mb-0">
+                    <li>Usa títulos descriptivos y concisos</li>
+                    <li>La descripción es opcional pero ayuda a recordar detalles</li>
+                    <li>Prioriza tareas según urgencia e importancia</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
